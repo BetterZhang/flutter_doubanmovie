@@ -7,12 +7,15 @@ import android.widget.Toast;
 import java.util.HashMap;
 import java.util.Map;
 import io.flutter.app.FlutterActivity;
+import io.flutter.plugin.common.EventChannel;
 import io.flutter.plugin.common.MethodChannel;
 import io.flutter.plugins.GeneratedPluginRegistrant;
 
 public class MainActivity extends FlutterActivity {
 
-  MethodChannel mMethodChannel;
+  private MethodChannel mMethodChannel;
+
+  private EventChannel.EventSink mEventSink;
 
   @Override
   protected void onCreate(Bundle savedInstanceState) {
@@ -20,6 +23,18 @@ public class MainActivity extends FlutterActivity {
     GeneratedPluginRegistrant.registerWith(this);
 
     mMethodChannel = new MethodChannel(getFlutterView(), "samples.flutter.io/message");
+
+    new EventChannel(getFlutterView(), "samples.flutter.io/event").setStreamHandler(new EventChannel.StreamHandler() {
+      @Override
+      public void onListen(Object o, EventChannel.EventSink sink) {
+        mEventSink = sink;
+      }
+
+      @Override
+      public void onCancel(Object o) {
+        mEventSink = null;
+      }
+    });
 
     new MethodChannel(getFlutterView(), "flutter.doubanmovie/buy").setMethodCallHandler((call, result) -> {
       switch (call.method) {
@@ -73,5 +88,9 @@ public class MainActivity extends FlutterActivity {
         Log.d("MainActivity", "notImplemented");
       }
     });
+
+    if (mEventSink != null) {
+      mEventSink.success("Android Message too");
+    }
   }
 }

@@ -10,8 +10,10 @@ class _MineWidgetState extends State<MineWidget> {
 
   static const platformChannel = const MethodChannel('samples.flutter.io/toast');
   static const channel = const MethodChannel('samples.flutter.io/message');
+  static const eventChannel = const EventChannel('samples.flutter.io/event');
 
   String textContent = 'Flutter Message';
+  String textContent2 = 'Flutter Message too';
 
   @override
   void initState() {
@@ -38,6 +40,25 @@ class _MineWidgetState extends State<MineWidget> {
           break;
       }
     });
+    eventChannel.receiveBroadcastStream().listen(_onListen, onError: _onError, onDone: _onDone, cancelOnError: false);
+  }
+
+  void _onListen(dynamic data) {
+    setState(() {
+      textContent2 = data;
+    });
+  }
+
+  void _onError(Object o) {
+    setState(() {
+      textContent2 = 'EventChannel error';
+    });
+  }
+
+  void _onDone() {
+    setState(() {
+      textContent2 = 'EventChannel done';
+    });
   }
 
   @override
@@ -54,6 +75,7 @@ class _MineWidgetState extends State<MineWidget> {
             },
           ),
           Text(textContent),
+          Text(textContent2),
         ],
       ),
     );
