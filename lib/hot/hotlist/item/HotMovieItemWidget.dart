@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/painting.dart';
+import 'package:flutter/services.dart';
 import '../data/HotMovieData.dart';
 
 class HotMovieItemWidget extends StatefulWidget {
@@ -13,6 +14,9 @@ class HotMovieItemWidget extends StatefulWidget {
 }
 
 class _HotMovieItemWidgetState extends State<HotMovieItemWidget> {
+
+  static const methodChannel = const MethodChannel('flutter.doubanmovie/buy');
+
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -72,7 +76,9 @@ class _HotMovieItemWidgetState extends State<HotMovieItemWidget> {
                   color: Colors.red,
                   highlightedBorderColor: Colors.red,
                   borderSide: BorderSide(color: Colors.red),
-                  onPressed: () {},
+                  onPressed: () {
+                    methodChannel.invokeMethod('buyTicket', '购买 ' + widget.hotMovieData.title + ' 电影票一张');
+                  },
                 ),
               ],
             ),
